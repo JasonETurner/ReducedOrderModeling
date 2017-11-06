@@ -162,12 +162,6 @@ def test():
     print('this isn\'t done yet.')
     return
 
-def printing(positionVector, u):
-    plt.plot( positionVector, u[:,0] )
-    plt.show()
-    print('this isn\'t done yet.')
-    return
-
 def main():
     #pg 30-31 - Research Notebook 1
     #input parameters
@@ -184,7 +178,25 @@ def main():
     U_ROM = dataDriven_ROM(X, C, tstep, positionVector)
     # (u_FD_ROM, A) = continuous_ROM(Re, c, L)
     # continuous_ROM(Re, c, L)
-    plt.plot( positionVector, U_ROM[:,0], positionVector, U_ROM[:,99], positionVector, U_ROM[:,199], positionVector, U_ROM[:,999] )
-    plt.show()
+    #plt.plot( positionVector, U_ROM[:,0], positionVector, U_ROM[:,99], positionVector, U_ROM[:,199], positionVector, U_ROM[:,999] )
+    #plt.show()
+    
+    # This is a function which plots a comparison of the FDM and the ROM.
+    # It should plot side by side, titles, axis titles, and in the correct typeface.
+    def printing( model1=X,model1Title='High Fidelity Model',model2=U_ROM,model2Title='Data Driven Reduced Order Model',nLines=10 ):
+        plt.figure(figsize=(12, 5))
+        plt.subplot( 1,2,1 )
+        plt.title( model1Title )
+        plt.xlabel( 'Position' )
+        plt.ylabel( 'Amplitude' )
+            plt.plot( positionVector, model1[:,line*int(tstep/nLines)-1] )
+        plt.subplot( 1,2,2 )
+        plt.title( model2Title )
+        plt.xlabel( 'Position' )
+        plt.ylabel( 'Amplitude' )
+            plt.plot( positionVector, model2[:,line*int(tstep/nLines)-1] )
+        plt.tight_layout()
+        plt.show()
+    printing()
 
 main()
