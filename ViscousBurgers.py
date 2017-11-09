@@ -8,37 +8,53 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def highFidelityModel (Re, dx, dt, tstep, L, positionVector,initialConditionFlag):
+def highFidelityModel (Re, dx, dt, tstep, L, positionVector,initialConditionFlag, EPSILON):
 
-    #Construct Stencil Matrix
-    aCoefficient = 1/(Re*dx**2) - c/(2*dx)
-    bCoefficient = -2/(dx**2)
-    cCoefficient = 1/(Re*dx**2)+c/(2*dx)
+    # Initialize Matrices
+    N = np.size(positionVector)
+    A = np.zeros( (N,N) )
+    B = A
 
-    a = np.ones((np.size(positionVector)-1,1)) * aCoefficient    #off diagonal
-    b = np.ones((np.size(positionVector),1)) * bCoefficient
-    c = np.ones((np.size(positionVector)-1,1)) * cCoefficient    #off diagonal
+    # Construct Stencil Matrix A - Convection Stencil
+    scalar = 1/(2*dx)
+    a = 1
+    b = -1
 
-    A = np.zeros((np.size(positionVector),np.size(positionVector)))
-
-    for i in range(np.size(positionVector)):
-        if i > 0 and i < np.size(positionVector)-1:
-            A[i,i] = bCoefficient
-            A[i,i+1] = aCoefficient
-            A[i,i-1] = cCoefficient
+    for i in range(N):
+        if i > 0 and i < N-1:
+            A[i,i+1] = a
+            A[i,i-1] = b
         elif i == 0 :
-            A[i,i] = bCoefficient
-            A[i,i+1] = aCoefficient
-        elif i == np.size(positionVector)-1:
-            A[i,i-1] = cCoefficient
-            A[i,i] = bCoefficient
+            A[i,N-2] = b
+            A[i,i+1] = a
+        elif i == (N - 1):
+            A[i,i-1] = b
+            A[i,1] = a
         else:
             print(i, 'erRawr')
+    A = scalar * A
 
-    A[0,np.size(positionVector)-2] = cCoefficient
-    A[np.size(positionVector)-1, 1] = aCoefficient
-    I = np.eye(np.size(positionVector))   # NxN identity Matrix
-    B = (I - dt * A)                # Evolution Matrix - see page 31
+    # Construct Stencil Matrix B - Diffusion Stencil In Progress!!!
+    scalar = 1/(Re * dx**2)
+    a = 1
+    b = -2
+
+    for i in range(N):
+        if i > 0 and i < N-1:
+            B[i,i+1] = a
+            B[i,i] = b
+            B[i,i-1] = a
+        elif i == 0 :
+            B[i,N-2] = a
+            B[i,i] = b
+            B[i,i+1] = a
+        elif i == (N - 1):
+            B[i,i-1] = a
+            B[i,i] = b
+            B[i,1] = a
+        else:
+            print(i, 'erRawr')
+    B = scalar * B
 
     # Define initial conditions as functions called in the dictionary
     # lookup executed below
@@ -76,10 +92,13 @@ def highFidelityModel (Re, dx, dt, tstep, L, positionVector,initialConditionFlag
     u = np.zeros(( np.size(u_init) , tstep ))
     u[:,0] = u_init
     #plt.plot(u_init)
-    C = np.linalg.inv(B)
+
 
     for i in range(1, tstep):
-        u[:,i] = C.dot(u[:,i-1])
+        # Compute Residual
+
+        # Find root
+        while eps > EPSILON
 
     return (u, C);
 
