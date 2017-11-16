@@ -181,6 +181,5 @@ def main():
     # continuous_ROM(Re, c, L)
     
     #display and save side by side figures using the printing module
-    printing.printFigures( positionVector=positionVector,tstep=tstep,model1=X,model1Title='High Fidelity Model',model2=U_ROM,model2Title='Data Driven Reduced Order Model',nLines=25)
 
 main()
