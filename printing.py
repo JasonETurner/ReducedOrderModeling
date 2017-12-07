@@ -2,13 +2,17 @@
 """
 Created on Wed Nov 15 14:46:01 2017
 
-@author: Aryn Harmon.
+@author: Aryn Harmon
 This is a module which contains printFigures(); this function plots a comparison of the FDM and the ROM (or any two models). It should plot side by side, titles, axis titles, and in the correct typeface. It defaults to outputting a single svg file, but 'png' can be specified instead. 
 """
 import matplotlib.pyplot as plt
+from matplotlib import rc
 
 def printFigures( positionVector,tstep,model1,model1Title,model2,model2Title,nLines,filetype='svg' ):
-  plt.figure(figsize=(12, 5))#move default variable to main(), keep printing() out of main() for organization
+  rc('font',**{'family':'serif','serif':['CMU Serif']})
+  rc('text', usetex=True)
+  plt.rcParams['font.size'] = 24
+  plt.figure(figsize=(15, 7))
   plt.subplot( 1,2,1 )
   plt.title( model1Title )
   plt.xlabel( 'Position' )
