@@ -94,7 +94,7 @@ def highFidelityModel (Re, dx, c, dt, tstep, L, positionVector,initialConditionF
 
 def dataDriven_ROM(X, A, tstep, positionVector):
     # USE SVD for data driven ROM approach
-    num_modes = 5
+    num_modes = 3
 
     (U, sigma, V) = np.linalg.svd(X)
     Ur = U[:,0:(num_modes-1)]
@@ -181,6 +181,6 @@ def main():
     # continuous_ROM(Re, c, L)
     
     #display and save side by side figures using the printing module
-    printing.printFigures( positionVector=positionVector,tstep=tstep,model1=X,model1Title='High Fidelity Model',model2=U_ROM,model2Title='Data Driven Reduced Order Model',nLines=25)
+    printing.printFigures( positionVector=positionVector,tstep=tstep,model1=X,model1Title='High Fidelity Model',model2=U_ROM,model2Title='Reduced Order Model',nLines=25)
 
 main()
