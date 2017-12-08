@@ -26,7 +26,6 @@
 \columnseprule=3pt % This is the thickness of the black line between the columns in the poster
 
 \usepackage[svgnames]{xcolor} % Specify colors by their 'svgnames'
-
 \usepackage{graphicx} % Required for including images
 \usepackage{booktabs} % Top and bottom rules for table
 \usepackage{mathdots}
@@ -47,8 +46,9 @@
 \makeatother
 
 \usepackage{sectsty}
-\sectionfont{\fontsize{60}{65}\selectfont}
+\sectionfont{\fontsize{60}{60}\selectfont}
 \subsectionfont{\fontsize{50}{60}\selectfont}
+\subsubsectionfont{\fontsize{40}{48}\selectfont}
 
 \begin{document}
 
@@ -61,9 +61,9 @@
 % The second is 25% wide and houses a logo for your university/organization or a photo of you
 % The widths of these boxes can be easily edited to accommodate your content as you see fit
 
-
 \begin{minipage}[c]{\linewidth}
 \begin{centering}
+\vspace{-1cm}
 \veryHuge \color{NavyBlue} \textbf{Data Driven Reduced Order Modeling} \color{Black}\\[1cm] % Title
 %\Huge\textit{Subtitle}\\[2cm] % Subtitle
 \Huge Aryn Harmon$^1$ and Jason Turner$^2$\\
@@ -89,7 +89,7 @@
 \begin{abstract}
 \LARGE
 
-\textsc{Model Order Reduction} (MOR) can be applied to many-dimensional problems to reduce the computational cost of finding solutions. We created a high fidelity model for the linear convection and diffusion equation using finite difference methods. Using data from this model, we successfully constructed an accurate lower order model using proper orthogonal decomposition.
+\textsc{Reduced Order Modeling} (ROM) can be applied to high-dimensional problems to reduce the computational cost of finding solutions. A high fidelity model was created for several partial differential equations of physical significance. Using data from these models, accurate reduced order models were constructed.
 
 \end{abstract}
 \hrulefill
@@ -101,31 +101,43 @@
 \color{Black} % DarkSlateGray color for the rest of the content
 
 \section{Main Objectives}
-\huge
+\LARGE
 \begin{enumerate}
 \item Make online computation possible in computationally challenging problems.
 \item Speed up analysis of problems with many degrees of freedom.
 \item Produce an understanding of physical processes which are currently obscured by complexity.
 \end{enumerate}
 
+\vspace{1cm}
+\begin{minipage}{.5\linewidth}
+  \centering
+  \includegraphics[width=.95\linewidth]{karmansquare}
+  \captionof{figure}{Atmospheric von Karman Vortex Street \cite{environmental}}
+\end{minipage}
+\begin{minipage}{.5\linewidth}
+  \centering
+  \includegraphics[width=.95\linewidth]{karmansim}
+  \captionof{figure}{Simulated von Karman Vortex Street \cite{ruggirello_2003}}
+\end{minipage}
+
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
 
 \color{Black} % SaddleBrown color for the introduction
-
 \section{Introduction}
 \LARGE
 \begin{itemize}
   \item Linear Convection and Diffusion Equation describes movement and diffusion of a wave in one dimension.
-  $$\frac{\partial u}{\partial t} + c \frac{\partial u}{\partial x} = \frac{1}{\mathrm{Re}} \frac{\partial^2 u}{\partial x^2}$$
+  $$\frac{\partial u}{\partial t} + c \frac{\partial u}{\partial x} = \nu \frac{\partial^2 u}{\partial x^2}$$
   $$\vec{u}^{\,n+1} = \mathcal{L}(\vec{u}^{\,n}) = \mathrm{\textbf{B}} \vec{u}^{\,n}$$
+    
+  \item Viscous Burger's Equation
+  $$\frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} = \nu \frac{\partial^2 u}{\partial x^2}$$
+  $$\vec{u}^{\,n+1} = \mathcal{L}(\vec{u}^{\,n}) + \mathcal{N}(\vec{u}^{\,n})$$
+  
   \item Black-Scholes Model prices European options.
   $$\frac{\partial w}{\partial t} = rw - rx \frac{\partial w}{\partial x} - \frac{1}{2} v^2 x^2 \frac{\partial^2 w}{\partial x^2}$$
-  \item Viscous Burger's Equation (short description, mention nonlinearity)
-  $$\frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} = \nu \frac{\partial^2 u}{\partial x^2}$$
-  $$\mathrm{\textbf{J}} \left( u^{n+1} - u^n \right) - \mathrm{\textbf{R}} \left( u^n \right)=0 \implies u^{n+1} = \mathcal{L}(\vec{u}^{\,n}) + \mathcal{N}(\vec{u}^{\,n})$$
-  \item MOR uses symmetries in problems to find answers faster.
 \end{itemize}
 
 %----------------------------------------------------------------------------------------
@@ -135,59 +147,69 @@
 \section{Methods}
 \LARGE
 %---------------------------------------------------
-\subsection{Full Order Model}
-
+\subsection{Full Order/High Fidelity Model}
+\subsubsection{Linear Convection and Diffusion Equation}
 Finite Difference Scheme:
 $$\frac{\partial u}{\partial x} = \frac{u_{i+1} - u_{i-1}}{2 \Delta x} + \mathcal{O}(\Delta x^2)$$
 $$\frac{\partial^2 u}{\partial x^2} = \frac{u_{i+1} - 2u_i + u_{i-1}}{\Delta x^2} + \mathcal{O}(\Delta x^2)$$
 $$\vdots$$
-$$\frac{\partial \vec{u}_i}{\partial t} = \left(\frac{1}{\mathrm{Re} \Delta x^2} - \frac{c}{2 \Delta x}\right)u_{i+1} - \frac{2}{\Delta x^2} u_i + \left( \frac{1}{\mathrm{Re} \Delta x^2} + \frac{c}{2 \Delta x} \right) u_{i-1}$$
+\Large
+$$\frac{\partial \vec{u}_i}{\partial t} = \left(\frac{\nu}{\Delta x^2} - \frac{c}{2 \Delta x}\right)u_{i+1} - \left(\frac{2}{\Delta x^2}\right) u_i + \left( \frac{\nu}{\Delta x^2} + \frac{c}{2 \Delta x} \right) u_{i-1}$$
+\LARGE
+\subsubsection{Viscous Burger's Equation}
+Newton's Method:
+$$\mathrm{\textbf{J}} \left( u^{n+1} - u^n \right) - \mathrm{\textbf{R}} \left( u^n \right)=0$$
 
 \subsection{Reduced Order Model}
 
-The goal of MOR is to lower the rank needed to evolve a system to solve it; this can be done with \textbf{singular value decomposition}.
-$$\mathrm{min} \{ ||\textbf{X} - u \cdot v||_F \} \implies A = U \Sigma V^T$$
-The number of modes we use to create the model is dependent on how many singular values are used. In the case of linear convection and diffusion, we used three modes to model with nearly no error.
+The goal of ROM is to lower the rank of the matrices involved in evolving the system; this can be done with \textbf{singular value decomposition}.
+$$\mathrm{min} \{ ||\textbf{X} - \tilde{\textbf{X}}||_F \} \ni \mathrm{rank}(\tilde{\textbf{X}}) \ll \mathrm{rank}(\textbf{X})$$
+$$\tilde{\textbf{X}} = U \Sigma V^T$$
+The number of modes we use to create the model is dependent on how many singular values are used. In the case of linear convection and diffusion, we used five modes to model with nearly no error.
 
 %----------------------------------------------------------------------------------------
 %	RESULTS 
 %----------------------------------------------------------------------------------------
-
+\vspace{-2cm}
 \section{Results}
 
-
-
 \includegraphics[width=\linewidth]{fig.pdf}
+
+Preliminary timing tests show a speed-up of about 50\%.
 
 %----------------------------------------------------------------------------------------
 %	CONCLUSIONS
 %----------------------------------------------------------------------------------------
 
-\color{Navy} % SaddleBrown color for the conclusions to make them stand out
+%\color{Navy} % SaddleBrown color for the conclusions to make them stand out
 
-\section{Conclusions}
+%\section{Conclusions}
 
-\begin{itemize}
-\item 
-\end{itemize}
+%\begin{itemize}
+%\item 
+%\end{itemize}
 
 \color{DarkSlateGray} % Set the color back to DarkSlateGray for the rest of the content
 
 %----------------------------------------------------------------------------------------
 %	FORTHCOMING RESEARCH
 %----------------------------------------------------------------------------------------
-
+\vspace{-1.5cm}
 \section{Forthcoming Research}
 
-
-
+\begin{itemize}
+	\item Model Black-Scholes Equation
+	\item Merton Model
+	$$\frac{\partial u}{\partial \tau} = \frac{1}{2} \sigma^2_s s^2 \frac{\partial^2 u}{\partial s^2} + (r-\mu \xi) s \frac{\partial u}{\partial s} - (r+\mu)u + \mu \int_{0}^{\infty}u (sy,\tau)p(y)dy$$
+	\item Discrete empirical interpolation method
+\end{itemize}
 %----------------------------------------------------------------------------------------
 %	REFERENCES
 %----------------------------------------------------------------------------------------
-
+\large
 \nocite{*} % Print all references regardless of whether they were cited in the poster or not
 \bibliographystyle{plain} % Plain referencing style
-\bibliography{sample} % Use the example bibliography file sample.bib
+\bibliography{poster} % Use the example bibliography file sample.bib
 
 %----------------------------------------------------------------------------------------
 %	ACKNOWLEDGEMENTS
