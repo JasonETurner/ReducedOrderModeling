@@ -63,7 +63,7 @@
 
 \begin{minipage}[c]{\linewidth}
 \begin{centering}
-\vspace{-1cm}
+\vspace{-1.5cm}
 \veryHuge \color{NavyBlue} \textbf{Data Driven Reduced Order Modeling} \color{Black}\\[1cm] % Title
 %\Huge\textit{Subtitle}\\[2cm] % Subtitle
 \Huge Aryn Harmon$^1$ and Jason Turner$^2$\\
@@ -99,7 +99,6 @@
 %----------------------------------------------------------------------------------------
 
 \color{Black} % DarkSlateGray color for the rest of the content
-
 \section{Main Objectives}
 \LARGE
 \begin{enumerate}
@@ -148,24 +147,38 @@
 \LARGE
 %---------------------------------------------------
 \subsection{Full Order/High Fidelity Model}
+
 \subsubsection{Linear Convection and Diffusion Equation}
+
 Finite Difference Scheme:
 $$\frac{\partial u}{\partial x} = \frac{u_{i+1} - u_{i-1}}{2 \Delta x} + \mathcal{O}(\Delta x^2)$$
 $$\frac{\partial^2 u}{\partial x^2} = \frac{u_{i+1} - 2u_i + u_{i-1}}{\Delta x^2} + \mathcal{O}(\Delta x^2)$$
 $$\vdots$$
 \Large
 $$\frac{\partial \vec{u}_i}{\partial t} = \left(\frac{\nu}{\Delta x^2} - \frac{c}{2 \Delta x}\right)u_{i+1} - \left(\frac{2}{\Delta x^2}\right) u_i + \left( \frac{\nu}{\Delta x^2} + \frac{c}{2 \Delta x} \right) u_{i-1}$$
+
+\large
+$$\begin{bmatrix}
+(-\frac{2}{\Delta x^2}) & (\frac{\nu}{\Delta x^2} - \frac{c}{2\Delta x}) & 0 &\dots & 0 & (\frac{\nu}{\Delta x^2} +\frac{c}{2\Delta x}) & 0 \\ \\
+(\frac{\nu}{\Delta x^2} +\frac{c}{2\Delta x}) & (-\frac{2}{\Delta x^2}) & (\frac{\nu}{\Delta x^2} - \frac{c}{2\Delta x}) & 0 &\dots & & 0 \\ \\
+0&\ddots & \ddots & \ddots &  &  & \vdots \\ \\
+\vdots& & & \ddots & \ddots & \ddots & 0 \\ \\
+0 & & \dots & 0 &(\frac{\nu}{\Delta x^2} +\frac{c}{2\Delta x}) & (-\frac{2}{\Delta x^2}) & (\frac{\nu}{\Delta x^2} - \frac{c}{2\Delta x})  \\ \\
+0 & (\frac{\nu}{\Delta x^2} - \frac{c}{2\Delta x}) & 0 & \dots & 0 & (\frac{\nu}{\Delta x^2} +\frac{c}{2\Delta x}) &  (-\frac{2}{\Delta x^2}) 
+   
+\end{bmatrix}$$
+
 \LARGE
 \subsubsection{Viscous Burger's Equation}
 Newton's Method:
-$$\mathrm{\textbf{J}} \left( u^{n+1} - u^n \right) - \mathrm{\textbf{R}} \left( u^n \right)=0$$
+$$\mathrm{\textbf{J}} \left( \vec{u}^{\,n+1} - \vec{u}^{\,n} \right) - \mathrm{\textbf{R}} \left( \vec{u}^{\,n} \right)=0$$
 
 \subsection{Reduced Order Model}
-
-The goal of ROM is to lower the rank of the matrices involved in evolving the system; this can be done with \textbf{singular value decomposition}.
-$$\mathrm{min} \{ ||\textbf{X} - \tilde{\textbf{X}}||_F \} \ni \mathrm{rank}(\tilde{\textbf{X}}) \ll \mathrm{rank}(\textbf{X})$$
+\Large
+The efficiences and benefits of ROM are realized by reducing the complexity of the underlying mathematics of the problem. This can be achieved by reducing the rank of matrices involved in evolving the system; this can be done with \textbf{singular value decomposition} (SVD).
+$$\mathrm{min} \{ ||\textbf{X} - \tilde{\textbf{X}}||_F \} \,\,\,s.t.\,\,\, \mathrm{rank}(\tilde{\textbf{X}}) \ll \mathrm{rank}(\textbf{X})$$
 $$\tilde{\textbf{X}} = U \Sigma V^T$$
-The number of modes we use to create the model is dependent on how many singular values are used. In the case of linear convection and diffusion, we used five modes to model with nearly no error.
+The number of modes used to create the model is equivalent to the choice of singular values. In the case of linear convection and diffusion, five modes were used to model with nearly no error.
 
 %----------------------------------------------------------------------------------------
 %	RESULTS 
@@ -175,33 +188,26 @@ The number of modes we use to create the model is dependent on how many singular
 
 \includegraphics[width=\linewidth]{fig.pdf}
 
-Preliminary timing tests show a speed-up of about 50\%.
+Preliminary timing tests show computational speed-up of about 50\%, but this may not stay constant as the complexity of the problem is varied.
 
 %----------------------------------------------------------------------------------------
 %	CONCLUSIONS
 %----------------------------------------------------------------------------------------
-
-%\color{Navy} % SaddleBrown color for the conclusions to make them stand out
-
 %\section{Conclusions}
-
-%\begin{itemize}
-%\item 
-%\end{itemize}
-
-\color{DarkSlateGray} % Set the color back to DarkSlateGray for the rest of the content
-
 %----------------------------------------------------------------------------------------
 %	FORTHCOMING RESEARCH
 %----------------------------------------------------------------------------------------
 \vspace{-1.5cm}
 \section{Forthcoming Research}
-
+\vspace{-1cm}
 \begin{itemize}
 	\item Model Black-Scholes Equation
 	\item Merton Model
 	$$\frac{\partial u}{\partial \tau} = \frac{1}{2} \sigma^2_s s^2 \frac{\partial^2 u}{\partial s^2} + (r-\mu \xi) s \frac{\partial u}{\partial s} - (r+\mu)u + \mu \int_{0}^{\infty}u (sy,\tau)p(y)dy$$
-	\item Discrete empirical interpolation method
+	\item Implement hyper-reduction
+	\begin{itemize}
+		\item Discrete Empirical Interpolation Method (DEIM)
+	\end{itemize}
 \end{itemize}
 %----------------------------------------------------------------------------------------
 %	REFERENCES
@@ -214,17 +220,17 @@ Preliminary timing tests show a speed-up of about 50\%.
 %----------------------------------------------------------------------------------------
 %	ACKNOWLEDGEMENTS
 %----------------------------------------------------------------------------------------
-
+\vspace{-1.5cm}
 \section{Acknowledgements}
-
+\vspace{-1.5cm}
 \begin{minipage}[c]{0.5\linewidth}
 \begin{centering}
-\includegraphics[width=\linewidth]{pure_logof.pdf}
+\includegraphics[width=0.75\linewidth]{pure_logof.pdf}
 \end{centering}
 \end{minipage}
 \begin{minipage}[c]{0.5\linewidth}
 \begin{centering}
-\includegraphics[width=\linewidth]{logo.jpg}
+\includegraphics[width=0.75\linewidth]{logo.jpg}
 \end{centering}
 \end{minipage}
 %----------------------------------------------------------------------------------------
